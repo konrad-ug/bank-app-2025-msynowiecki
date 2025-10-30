@@ -1,30 +1,16 @@
 class Account:
-    def __init__(self, first_name, last_name, pesel, promotion_code = "Invalid"):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.pesel = pesel if self.is_pesel_valid(pesel) else "Invalid"
-        self.balance = 50.0 if self.is_promotion_code_valid(promotion_code) and self.is_born_after_1960(pesel) else 0.0
-        self.promotion_code = promotion_code if self.is_promotion_code_valid(promotion_code) else "Invalid"
+    def __init__(self):
+        self.balance = 0.0
 
-    def is_pesel_valid(self, pesel):
+    def ingoing_transfer(self, amount):
+        if isinstance(amount, float) and amount > 0.0:
+            self.balance += amount
 
-        if isinstance(pesel, str) and len(pesel) == 11 and pesel.isdigit():
-            return True
+    def outgoing_transfer(self, amount):
+        if isinstance(amount, float) and amount > 0.0 and self.balance > amount:
+            self.balance -= amount
 
-        return False
-
-    def is_promotion_code_valid(self, promotion_code):
-
-        if isinstance(promotion_code, str) and promotion_code.startswith("PROM_") and len(promotion_code) == 8:
-            return True
-
-        return False
-
-    def is_born_after_1960(self, pesel):
-
-        if int(pesel[2:4]) <= 12 and int(pesel[:2]) < 60:
-            return True
-
-        return False
-
+    def outgoing_express_transfer(self, amount, fee):
+        if isinstance(amount, float) and amount > 0.0 and self.balance - amount - fee > -fee:
+            self.balance -= amount + fee
 
