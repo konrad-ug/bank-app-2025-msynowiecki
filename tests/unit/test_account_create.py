@@ -51,7 +51,6 @@ class TestPersonalAccount:
         account.ingoing_transfer('20')
         assert account.balance == 0.0
 
-
     def test_ingoing_transfer_valid(self):
         account = PersonalAccount("John", "Doe", "99039666673")
         assert account.balance == 0.0
@@ -83,6 +82,33 @@ class TestPersonalAccount:
         account.outgoing_transfer(20.0)
         assert account.balance == 10.0
 
+    def test_outgoing_express_transfer_invalid_amount(self):
+        account = PersonalAccount("John", "Doe", "99039666673")
+        assert account.balance == 0.0
+        account.outgoing_express_transfer(-20.0)
+        assert account.balance == 0.0
+
+    def test_outgoing_express_transfer_invalid_type(self):
+        account = PersonalAccount("John", "Doe", "99039666673")
+        assert account.balance == 0.0
+        account.outgoing_express_transfer('20.0')
+        assert account.balance == 0.0
+
+    def test_outgoing_express_transfer_invalid_balance(self):
+        account = PersonalAccount("John", "Doe", "99039666673")
+        assert account.balance == 0.0
+        account.outgoing_express_transfer(20.0)
+        assert account.balance == 0.0
+
+    def test_outgoing_express_transfer_valid(self):
+        account = PersonalAccount("John", "Doe", "99039666673")
+        account.ingoing_transfer(30.0)
+        assert account.balance == 30.0
+        account.outgoing_express_transfer(20.0)
+        assert account.balance == 9.0
+
+
+
 class TestCompanyAccount:
     def test_account_creation(self):
         account = CompanyAccount("SupCompany", "1021010102")
@@ -96,6 +122,74 @@ class TestCompanyAccount:
     def test_nip_long(self):
         account = CompanyAccount("SupCompany", "10210101022")
         assert account.nip == "Invalid"
+
+    def test_ingoing_transfer_invalid_amount(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.ingoing_transfer(-20.0)
+        assert account.balance == 0.0
+
+    def test_ingoing_transfer_invalid_type(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.ingoing_transfer('20')
+        assert account.balance == 0.0
+
+    def test_ingoing_transfer_valid(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.ingoing_transfer(20.0)
+        assert account.balance == 20.0
+
+    def test_outgoing_transfer_invalid_amount(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.outgoing_transfer(-20.0)
+        assert account.balance == 0.0
+
+    def test_outgoing_transfer_invalid_type(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.outgoing_transfer('20')
+        assert account.balance == 0.0
+
+    def test_outgoing_transfer_invalid_balance(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.outgoing_transfer(20.0)
+        assert account.balance == 0.0
+
+    def test_outgoing_transfer_valid(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        account.ingoing_transfer(30.0)
+        assert account.balance == 30.0
+        account.outgoing_transfer(20.0)
+        assert account.balance == 10.0
+
+    def test_outgoing_express_transfer_invalid_amount(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.outgoing_express_transfer(-20.0)
+        assert account.balance == 0.0
+
+    def test_outgoing_express_transfer_invalid_type(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.outgoing_express_transfer('20.0')
+        assert account.balance == 0.0
+
+    def test_outgoing_express_transfer_invalid_balance(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        assert account.balance == 0.0
+        account.outgoing_express_transfer(20.0)
+        assert account.balance == 0.0
+
+    def test_outgoing_express_transfer_valid(self):
+        account = CompanyAccount("SupCompany", "1021010102")
+        account.ingoing_transfer(30.0)
+        assert account.balance == 30.0
+        account.outgoing_express_transfer(20.0)
+        assert account.balance == 5.0
 
 
 
