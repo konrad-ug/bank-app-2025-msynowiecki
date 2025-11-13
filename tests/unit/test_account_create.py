@@ -209,6 +209,50 @@ class TestPersonalAccount:
         account.outgoing_express_transfer(20.0)
         assert account.balance == 9.0
 
+    def test_submit_loan_invalid_amount(self):
+        account = PersonalAccount("John", "Doe", "99039666673")
+        assert account.balance == 0.0
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        account.submit_for_loan(-500.0)
+        assert not account.submit_for_loan(-500.0)
+        assert account.balance == 150.0
+
+    def test_submit_loan_invalid_transactions(self):
+        account = PersonalAccount("John", "Doe", "99039666673")
+        assert account.balance == 0.0
+        account.ingoing_transfer(30.0)
+        account.submit_for_loan(10.0)
+        assert not account.submit_for_loan(10.0)
+        assert account.balance == 30.0
+
+    def test_submit_loan_invalid_sum(self):
+        account = PersonalAccount("John", "Doe", "99039666673")
+        assert account.balance == 0.0
+        account.ingoing_transfer(130.0)
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        account.outgoing_transfer(30.0)
+        account.outgoing_transfer(30.0)
+        account.outgoing_transfer(30.0)
+        account.submit_for_loan(10.0)
+        assert not account.submit_for_loan(10.0)
+        assert account.balance == 100.0
+
+    def test_submit_loan_valid(self):
+        account = PersonalAccount("John", "Doe", "99039666673")
+        assert account.balance == 0.0
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        account.ingoing_transfer(30.0)
+        assert account.submit_for_loan(10.0)
+        assert account.balance == 160.0
+
 
 
 class TestCompanyAccount:
