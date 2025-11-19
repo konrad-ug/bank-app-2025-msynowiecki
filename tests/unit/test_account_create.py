@@ -1,349 +1,54 @@
-from src.personalaccount import PersonalAccount
 from src.companyaccount import CompanyAccount
-from src.account import Account
+from src.personalaccount import PersonalAccount
 
-class TestAccount:
+import pytest
 
-    def test_account_create(self):
-        account = Account()
-        assert account.balance == 0
-        assert account.history == []
-
-    def test_ingoing_transfer_invalid_amount(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.ingoing_transfer(-20.0)
-        assert account.balance == 0.0
-
-    def test_ingoing_transfer_invalid_type(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.ingoing_transfer('20')
-        assert account.balance == 0.0
-
-    def test_ingoing_transfer_valid(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.ingoing_transfer(20.0)
-        assert account.balance == 20.0
-
-    def test_outgoing_transfer_invalid_amount(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.outgoing_transfer(-20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_transfer_invalid_type(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.outgoing_transfer('20')
-        assert account.balance == 0.0
-
-    def test_outgoing_transfer_invalid_balance(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.outgoing_transfer(20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_transfer_valid(self):
-        account = Account()
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_transfer(20.0)
-        assert account.balance == 10.0
-
-    def test_outgoing_express_transfer_invalid_amount(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.outgoing_express_transfer(-20.0, 1.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_invalid_type(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.outgoing_express_transfer('20.0', 1.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_invalid_balance(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.outgoing_express_transfer(20.0, 1.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_valid(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_express_transfer(20.0, 1.0)
-        assert account.balance == 9.0
-
-    def test_outgoing_express_transfer_fee_invalid_amount(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_express_transfer(20.0, -1.0)
-        assert account.balance == 30.0
-
-    def test_outgoing_express_transfer_fee_invalid_type(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_express_transfer(20.0, '1.0')
-        assert account.balance == 30.0
-
-    def test_outgoing_express_transfer_fee_valid(self):
-        account = Account()
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_express_transfer(20.0, 1.0)
-        assert account.balance == 9.0
+@pytest.mark.parametrize(
+    "first_name, last_name, pesel, expected",
+    [
+        ("John", "Doe", "99039666673", "99039666673"),
+        ("John", "Doe", "9903966667X", "Invalid"),
+        ("John", "Doe", "990396666732", "Invalid"),
+        ("John", "Doe", "9903966667", "Invalid"),
+        ("John", "Doe", True, "Invalid")
+    ]
+)
+def test_personal_account_creation(first_name, last_name, pesel, expected):
+    account = PersonalAccount(first_name, last_name, pesel)
+    assert account.first_name == first_name
+    assert account.last_name == last_name
+    assert account.pesel == expected
 
 
-class TestPersonalAccount:
-
-    def test_account_creation(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.first_name == "John"
-        assert account.last_name == "Doe"
-        assert account.pesel == "99039666673"
-        assert account.balance == 0.0
-        assert account.promotion_code == "Invalid"
-
-    def test_short_pesel(self):
-        account = PersonalAccount("John", "Doe", "9903966667")
-        assert account.pesel == "Invalid"
-
-    def test_long_pesel(self):
-        account = PersonalAccount("John", "Doe", "990396666734")
-        assert account.pesel == "Invalid"
-
-    def test_pesel_non_digit(self):
-        account = PersonalAccount("John", "Doe", None)
-        assert account.pesel == "Invalid"
-
-    def test_prom_code_valid(self):
-        account = PersonalAccount("John", "Doe", "59039666673", "PROM_XYZ")
-        assert account.balance == 50.0
-        assert account.promotion_code == "PROM_XYZ"
-
-    def test_prom_code_valid_but_age(self):
-        account = PersonalAccount("John", "Doe", "99039666673", "PROM_XYZ")
-        assert account.balance == 0.0
-        assert account.promotion_code == "PROM_XYZ"
-
-    def test_prom_code_invalid(self):
-        account = PersonalAccount("John", "Doe", "99039666673", "PRM_XYZ")
-        assert account.balance == 0.0
-        assert account.promotion_code == "Invalid"
-
-    def test_ingoing_transfer_invalid_amount(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.ingoing_transfer(-20.0)
-        assert account.balance == 0.0
-        
-    def test_ingoing_transfer_invalid_type(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.ingoing_transfer('20')
-        assert account.balance == 0.0
-
-    def test_ingoing_transfer_valid(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.ingoing_transfer(20.0)
-        assert account.balance == 20.0
-
-    def test_outgoing_transfer_invalid_amount(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.outgoing_transfer(-20.0)
-        assert account.balance == 0.0
-        
-    def test_outgoing_transfer_invalid_type(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.outgoing_transfer('20')
-        assert account.balance == 0.0
-
-    def test_outgoing_transfer_invalid_balance(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.outgoing_transfer(20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_transfer_valid(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_transfer(20.0)
-        assert account.balance == 10.0
-
-    def test_outgoing_express_transfer_invalid_amount(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.outgoing_express_transfer(-20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_invalid_type(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.outgoing_express_transfer('20.0')
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_invalid_balance(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.outgoing_express_transfer(20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_valid(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_express_transfer(20.0)
-        assert account.balance == 9.0
-
-    def test_submit_loan_invalid_amount(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        account.submit_for_loan(-500.0)
-        assert not account.submit_for_loan(-500.0)
-        assert account.balance == 150.0
-
-    def test_submit_loan_invalid_transactions(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        account.submit_for_loan(10.0)
-        assert not account.submit_for_loan(10.0)
-        assert account.balance == 30.0
-
-    def test_submit_loan_invalid_sum(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.ingoing_transfer(130.0)
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        account.outgoing_transfer(30.0)
-        account.outgoing_transfer(30.0)
-        account.outgoing_transfer(30.0)
-        account.submit_for_loan(10.0)
-        assert not account.submit_for_loan(10.0)
-        assert account.balance == 100.0
-
-    def test_submit_loan_valid(self):
-        account = PersonalAccount("John", "Doe", "99039666673")
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        account.ingoing_transfer(30.0)
-        assert account.submit_for_loan(10.0)
-        assert account.balance == 160.0
+@pytest.mark.parametrize(
+    "first_name, last_name, pesel, promotion_code, expected, expected_code",
+    [
+        ("John", "Doe", "59039666673", "PROM_XYZ", 50.0, "PROM_XYZ"),
+        ("John", "Doe", "99039666673", "PROM_XYZ", 0.0, "PROM_XYZ"),
+        ("John", "Doe", "99039666673", "PROM_XY", 0.0, "Invalid"),
+    ]
+)
+def test_personal_account_creation(first_name, last_name, pesel, promotion_code, expected, expected_code):
+    account = PersonalAccount(first_name, last_name, pesel, promotion_code)
+    assert account.balance == expected
+    assert account.promotion_code == expected_code
 
 
-
-class TestCompanyAccount:
-    def test_account_creation(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.name == "SupCompany"
-        assert account.nip == "1021010102"
-
-    def test_nip_short(self):
-        account = CompanyAccount("SupCompany", "102101010")
-        assert account.nip == "Invalid"
-
-    def test_nip_long(self):
-        account = CompanyAccount("SupCompany", "10210101022")
-        assert account.nip == "Invalid"
-
-    def test_ingoing_transfer_invalid_amount(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.ingoing_transfer(-20.0)
-        assert account.balance == 0.0
-
-    def test_ingoing_transfer_invalid_type(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.ingoing_transfer('20')
-        assert account.balance == 0.0
-
-    def test_ingoing_transfer_valid(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.ingoing_transfer(20.0)
-        assert account.balance == 20.0
-
-    def test_outgoing_transfer_invalid_amount(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.outgoing_transfer(-20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_transfer_invalid_type(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.outgoing_transfer('20')
-        assert account.balance == 0.0
-
-    def test_outgoing_transfer_invalid_balance(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.outgoing_transfer(20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_transfer_valid(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_transfer(20.0)
-        assert account.balance == 10.0
-
-    def test_outgoing_express_transfer_invalid_amount(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.outgoing_express_transfer(-20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_invalid_type(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.outgoing_express_transfer('20.0')
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_invalid_balance(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.outgoing_express_transfer(20.0)
-        assert account.balance == 0.0
-
-    def test_outgoing_express_transfer_valid(self):
-        account = CompanyAccount("SupCompany", "1021010102")
-        assert account.balance == 0.0
-        account.ingoing_transfer(30.0)
-        assert account.balance == 30.0
-        account.outgoing_express_transfer(20.0)
-        assert account.balance == 5.0
+def test_is_pesel_valid_direct():
+    account = PersonalAccount("John", "Doe", "99039666673")
+    assert account.is_pesel_valid("123") is False
 
 
-
-
-
-        
-
-
-
+@pytest.mark.parametrize(
+    "name, nip, expected",
+    [
+        ("SupCompany", "1021010102", "1021010102"),
+        ("SupCompany", "10210101022", "Invalid"),
+        ("SupCompany", "102101010", "Invalid"),
+        ("SupCompany", True, "Invalid"),
+    ]
+)
+def test_company_account_creation(name, nip, expected):
+    account = CompanyAccount(name, nip)
+    assert account.name == name
+    assert account.nip == expected
