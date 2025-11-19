@@ -9,7 +9,7 @@ class Account:
             self.history.append(amount)
 
     def outgoing_transfer(self, amount):
-        if isinstance(amount, float) and amount > 0.0 and self.balance > amount:
+        if isinstance(amount, float) and amount > 0.0 and self.balance >= amount:
             self.balance -= amount
             self.history.append(-amount)
 
