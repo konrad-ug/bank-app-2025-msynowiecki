@@ -23,6 +23,23 @@ class TestCompanyAccount:
         assert account.balance == expected
 
 
+    @pytest.mark.parametrize(
+        "history, balance, amount, expected, expected_value",
+        [
+            ([10.0, -1775.0, 10.0], 20.0, 10.0, 30.0, True),
+            ([10.0, 10.0, 10.0], 20.0, 10.0, 20.0, False),
+            ([10.0, -1775.0, 10.0], 20.0, 15.0, 20.0, False),
+            ([10.0, -1775.0, 10.0], 20.0, True, 20.0, False),
+            ([10.0, -1775.0, 10.0], 20.0, -10.0, 20.0, False)
+        ]
+    )
+    def test_take_loan(self, account, balance, history, amount, expected, expected_value):
+        account.history = history
+        account.balance = balance
+        result = account.take_loan(amount)
+        assert result == expected_value
+        assert account.balance == expected
+
 
 
 
