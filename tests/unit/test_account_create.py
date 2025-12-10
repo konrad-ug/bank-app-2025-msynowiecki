@@ -1,5 +1,5 @@
-from src.companyaccount import CompanyAccount
-from src.personalaccount import PersonalAccount
+from src.company_account import CompanyAccount
+from src.personal_account import PersonalAccount
 
 import pytest
 

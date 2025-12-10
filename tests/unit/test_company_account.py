@@ -1,4 +1,4 @@
-from src.companyaccount import CompanyAccount
+from src.company_account import CompanyAccount
 
 import pytest
 

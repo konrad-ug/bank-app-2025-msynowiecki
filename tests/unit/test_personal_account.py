@@ -1,4 +1,4 @@
-from src.personalaccount import PersonalAccount
+from src.personal_account import PersonalAccount
 
 import pytest
 
