@@ -7,6 +7,7 @@ class AccountRegistry:
     def add_account(self, account):
         if isinstance(account, PersonalAccount):
             self.accounts.append(account)
+        return self.accounts
 
     def find_account(self, pesel):
         for account in self.accounts:
@@ -19,3 +20,15 @@ class AccountRegistry:
     
     def get_accounts_number(self):
         return len(self.accounts)
+    
+    def remove_account(self, pesel):
+        self.accounts = [account for account in self.accounts if account.pesel != pesel]
+        return self.accounts
+    
+    def update_account(self, pesel, new):
+        if isinstance(new, PersonalAccount):
+            for index in range(len(self.accounts)):
+                if self.accounts[index].pesel == pesel:
+                    self.accounts[index] = new
+        return self.accounts
+            
