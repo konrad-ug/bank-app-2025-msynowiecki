@@ -2,7 +2,7 @@ from src.account import Account
 
 import pytest
 
-from src.companyaccount import CompanyAccount
+from src.company_account import CompanyAccount
 
 
 @pytest.fixture

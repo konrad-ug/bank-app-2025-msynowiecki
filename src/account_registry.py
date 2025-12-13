@@ -1,4 +1,4 @@
-from src.personalaccount import PersonalAccount
+from src.personal_account import PersonalAccount
 
 class AccountRegistry:
     def __init__(self):
@@ -7,6 +7,8 @@ class AccountRegistry:
     def add_account(self, account):
         if isinstance(account, PersonalAccount):
             self.accounts.append(account)
+            return True
+        return False
 
     def find_account(self, pesel):
         for account in self.accounts:
@@ -19,3 +21,23 @@ class AccountRegistry:
     
     def get_accounts_number(self):
         return len(self.accounts)
+    
+    def remove_account(self, pesel):
+        for index, account in enumerate(self.accounts):
+            if account.pesel == pesel:
+                del self.accounts[index]
+                return True
+        return False
+
+    def update_account(self, pesel, new):
+        if not isinstance(new, PersonalAccount):
+            return False
+
+        for account in self.accounts:
+            if account.pesel == pesel:
+                account.first_name = new.first_name
+                account.last_name = new.last_name
+                return True
+
+        return False
+            
