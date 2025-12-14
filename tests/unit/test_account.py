@@ -1,5 +1,3 @@
-from charset_normalizer.utils import is_accentuated
-
 from src.account import Account
 
 import pytest
