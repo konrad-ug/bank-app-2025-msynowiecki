@@ -30,13 +30,13 @@ class AccountRegistry:
         return False
 
     def update_account(self, pesel, new):
-        if not isinstance(new, PersonalAccount):
+        if not isinstance(new, dict):
             return False
 
         for account in self.accounts:
             if account.pesel == pesel:
-                account.first_name = new.first_name
-                account.last_name = new.last_name
+                account.first_name = new["first_name"] if "first_name" in new else account.first_name
+                account.last_name = new["last_name"] if "last_name" in new else account.last_name
                 return True
 
         return False
