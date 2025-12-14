@@ -16,7 +16,7 @@ def create_account():
     assert response.status_code == 201
 
     response = requests.post(
-        f"{url}/accounts/{base_account["pesel"]}/transfer",
+        f"{url}/accounts/{base_account['pesel']}/transfer",
         json={"type": "ingoing", "amount": 1000}
     )
 
@@ -24,7 +24,7 @@ def create_account():
 
     yield base_account
 
-    requests.delete(f"{url}/accounts/{base_account["pesel"]}")
+    requests.delete(f"{url}/accounts/{base_account['pesel']}")
 
 
 class TestAccountAPI:
@@ -32,7 +32,7 @@ class TestAccountAPI:
     def test_get_account_request_found(self, create_account):
         account = create_account
 
-        response = requests.get(f"{url}/accounts/{account["pesel"]}")
+        response = requests.get(f"{url}/accounts/{account['pesel']}")
         assert response.status_code == 200
 
         data = response.json()
@@ -52,12 +52,12 @@ class TestAccountAPI:
     def test_update_account_request(self, create_account):
         account = create_account
 
-        response = requests.patch(f"{url}/accounts/{account["pesel"]}", json={"first_name": "Jane"})
+        response = requests.patch(f"{url}/accounts/{account['pesel']}", json={"first_name": "Jane"})
 
         assert response.status_code == 200
         assert response.json() == {"message": "Account updated"}
 
-        response = requests.get(f"{url}/accounts/{account["pesel"]}")
+        response = requests.get(f"{url}/accounts/{account['pesel']}")
         data = response.json()
 
         assert response.status_code == 200
@@ -68,7 +68,7 @@ class TestAccountAPI:
     def test_delete_account_request(self, create_account):
         account = create_account
 
-        response = requests.delete(f"{url}/accounts/{account["pesel"]}")
+        response = requests.delete(f"{url}/accounts/{account['pesel']}")
         assert response.status_code == 200
         assert response.json() == {"message": "Account deleted"}
 
@@ -92,7 +92,7 @@ class TestAccountAPI:
         account = create_account
 
         response = requests.post(
-            f"{url}/accounts/{account["pesel"]}/transfer",
+            f"{url}/accounts/{account['pesel']}/transfer",
             json={"type": transfer_type, "amount": amount}
         )
 
