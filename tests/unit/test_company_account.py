@@ -3,7 +3,13 @@ from src.company_account import CompanyAccount
 import pytest
 
 @pytest.fixture
-def account():
+def account(mocker):
+    mock_response = mocker.Mock()
+    mock_response.raise_for_status.return_value = None
+    mock_response.json.return_value = {"result": {"subject": {"statusVat": "Czynny"}}}
+
+    mocker.patch("requests.get", return_value=mock_response)
+
     return CompanyAccount("SupCompany", "1021010102")
 
 class TestCompanyAccount:

@@ -1,19 +1,53 @@
 from src.account import Account
+import requests
+import datetime
+
+url = "https://wl-test.mf.gov.pl/api/search/nip"
+
 
 class CompanyAccount(Account):
+
     def __init__(self, name, nip):
         super().__init__()
         self.name = name
-        self.nip = nip if self.is_nip_valid(nip) else "Invalid"
+        self.nip = nip
         self.express_fee = 5.0
 
+        if self.is_nip_valid(nip):
+            if not self.does_nip_exist(nip):
+                raise ValueError("Company not registered!")
+        else:
+            self.nip = "Invalid"
+
+
     def is_nip_valid(self, nip):
-        if isinstance(nip, str) and len(nip) == 10:
-            return True
-        return False
+        return isinstance(nip, str) and len(nip) == 10
+
+
+    def does_nip_exist(self, nip):
+
+        try:
+            response = requests.get(f'{url}/{nip}?date={datetime.date.today()}')
+            response.raise_for_status()
+            data = response.json()
+
+            print(data)
+
+            if data["result"]["subject"]["statusVat"]:
+                if data["result"]["subject"]["statusVat"] == "Czynny":
+                    return True
+            return False
+
+        # Co jeżeli subject jest none?
+
+        except requests.RequestException as error:
+            print("Api Error:", error)
+            return False
+
 
     def outgoing_express_transfer(self, amount):
         return super().outgoing_express_transfer(amount, self.express_fee)
+
 
     def take_loan(self, amount):
         if isinstance(amount, float) and amount > 0 and self.balance >= amount * 2 and -1775.0 in self.history:
