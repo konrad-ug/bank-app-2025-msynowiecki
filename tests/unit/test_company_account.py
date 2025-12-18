@@ -12,6 +12,7 @@ def account(mocker):
 
     return CompanyAccount("SupCompany", "1021010102")
 
+
 class TestCompanyAccount:
 
     @pytest.mark.parametrize(
