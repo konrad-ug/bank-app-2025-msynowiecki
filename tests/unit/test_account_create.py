@@ -48,7 +48,40 @@ def test_is_pesel_valid_direct():
         ("SupCompany", True, "Invalid"),
     ]
 )
-def test_company_account_creation(name, nip, expected):
+def test_company_account_creation(mocker, name, nip, expected):
+    mocker.patch("src.company_account.CompanyAccount.does_nip_exist", return_value=True)
+
     account = CompanyAccount(name, nip)
+
     assert account.name == name
     assert account.nip == expected
+
+
+def test_company_account_create(mocker):
+    mock_response = mocker.Mock()
+    mock_response.raise_for_status.return_value = None
+    mock_response.json.return_value = {"result": {"subject": {"statusVat": "Czynny"}}}
+
+    mocker.patch("requests.get", return_value=mock_response)
+
+    account = CompanyAccount("Test Company", "1234567890")
+
+    assert account.name == "Test Company"
+    assert account.nip == "1234567890"
+
+
+def test_company_account_create_invalid_nip(mocker):
+    mock_response = mocker.Mock()
+    mock_response.raise_for_status.return_value = None
+    mock_response.json.return_value = {
+        "result": {
+            "subject": {
+                "statusVat": None
+            }
+        }
+    }
+
+    mocker.patch("requests.get", return_value=mock_response)
+
+    with pytest.raises(ValueError):
+        CompanyAccount("Fake Company", "1234567890")

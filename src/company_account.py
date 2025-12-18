@@ -15,7 +15,9 @@ class CompanyAccount(Account):
 
         if self.is_nip_valid(nip):
             if not self.does_nip_exist(nip):
-                raise ValueError("Company not registered!!")
+                raise ValueError("Company not registered!")
+        else:
+            self.nip = "Invalid"
 
 
     def is_nip_valid(self, nip):
@@ -23,13 +25,24 @@ class CompanyAccount(Account):
 
 
     def does_nip_exist(self, nip):
-        response = requests.get(f'{url}/{nip}?date={datetime.date.today()}')
-        data = response.json()
 
-        if data["result"]["subject"]["statusVat"]:
-            if data["result"]["subject"]["statusVat"] == "Czynny":
-                return True
-        return False
+        try:
+            response = requests.get(f'{url}/{nip}?date={datetime.date.today()}')
+            response.raise_for_status()
+            data = response.json()
+
+            print(data)
+
+            if data["result"]["subject"]["statusVat"]:
+                if data["result"]["subject"]["statusVat"] == "Czynny":
+                    return True
+            return False
+
+        # Co jeżeli subject jest none?
+
+        except requests.RequestException as error:
+            print("Api Error:", error)
+            return False
 
 
     def outgoing_express_transfer(self, amount):
