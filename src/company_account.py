@@ -1,4 +1,6 @@
 from src.account import Account
+from smtp.smtp import SMTPClient
+
 import requests
 import datetime
 
@@ -38,8 +40,6 @@ class CompanyAccount(Account):
                     return True
             return False
 
-        # Co jeżeli subject jest none?
-
         except requests.RequestException as error:
             print("Api Error:", error)
             return False
@@ -55,3 +55,11 @@ class CompanyAccount(Account):
             self.history.append(amount)
             return True
         return False
+
+
+    def send_history_via_email(self, email):
+
+        subject = f'Account Transfer History {datetime.date.today()}'
+        text = f'Personal account history: {self.history}'
+
+        return SMTPClient.send(subject, text, email)

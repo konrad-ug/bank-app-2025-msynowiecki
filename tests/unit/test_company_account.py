@@ -2,6 +2,7 @@ from src.company_account import CompanyAccount
 
 import pytest
 
+
 @pytest.fixture
 def account(mocker):
     mock_response = mocker.Mock()
@@ -48,7 +49,34 @@ class TestCompanyAccount:
         assert account.balance == expected
 
 
+    def test_company_account_send_history_success(self, mocker):
+        mock_nip = mocker.patch("src.company_account.CompanyAccount.is_nip_valid", return_value=True)
+        mock_exists = mocker.patch("src.company_account.CompanyAccount.does_nip_exist", return_value=True)
 
+        mock_send = mocker.patch("smtp.smtp.SMTPClient.send", return_value=True)
+
+        account = CompanyAccount(name="Firma Sp. z o.o.", nip="1234567890")
+        account.history = [1000.0, -200.0]
+
+        result = account.send_history_via_email("firma@mail.com")
+
+        assert result is True
+        mock_send.assert_called_once()
+        mock_nip.assert_called_once_with("1234567890")
+        mock_exists.assert_called_once_with("1234567890")
+
+
+    def test_does_nip_exist_api_error(self, mocker):
+        from src.company_account import CompanyAccount
+        import requests
+
+        account = CompanyAccount.__new__(CompanyAccount)
+
+        mocker.patch("src.company_account.requests.get", side_effect=requests.RequestException("API failure"))
+
+        result = account.does_nip_exist("1234567890")
+
+        assert result is False
 
 
 

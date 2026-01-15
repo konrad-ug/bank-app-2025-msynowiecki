@@ -1,5 +1,5 @@
 from src.account import Account
-from server.smtp import SMTPClient
+from smtp.smtp import SMTPClient
 
 import datetime
 
@@ -41,10 +41,10 @@ class PersonalAccount(Account):
 
     def send_history_via_email(self, email):
 
-        client = SMTPClient()
-        response = client.send(f'Account Transfer History {datetime.date.today()}', f'Personal account history: {self.history}', email)
+        subject = f'Account Transfer History {datetime.date.today()}'
+        text = f'Personal account history: {self.history}'
 
-        return response
+        return SMTPClient.send(subject, text, email)
 
 
 

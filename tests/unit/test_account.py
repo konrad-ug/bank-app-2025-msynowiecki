@@ -2,8 +2,6 @@ from src.account import Account
 
 import pytest
 
-from src.company_account import CompanyAccount
-
 
 @pytest.fixture
 def account():
