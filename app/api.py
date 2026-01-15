@@ -11,7 +11,6 @@ from src.personal_account import PersonalAccount
 app = Flask(__name__)
 registry = AccountRegistry()
 
-
 @app.route("/api/accounts", methods=["POST"])
 def create_account():
     data = request.get_json()

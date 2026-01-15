@@ -3,6 +3,7 @@ from src.personal_account import PersonalAccount
 
 import pytest
 
+
 @pytest.mark.parametrize(
     "first_name, last_name, pesel, expected",
     [
