@@ -86,3 +86,17 @@ class TestAccountRegistry:
         assert registry.get_accounts_number() == 0
         registry.add_account(test_account)
         assert registry.get_accounts_number() == 1
+
+
+    def test_clear_accounts(self, registry):
+        registry.add_account(test_account)
+        registry.add_account(
+            PersonalAccount("Jane", "Doe", "12345678901")
+        )
+
+        assert registry.get_accounts_number() == 2
+
+        registry.clear_accounts()
+
+        assert registry.get_accounts() == []
+        assert registry.get_accounts_number() == 0
