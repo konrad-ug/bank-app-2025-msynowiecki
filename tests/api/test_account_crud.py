@@ -11,7 +11,6 @@ def create_account():
         "last_name": "Test",
         "pesel": str(uuid.uuid4().int)[:11],
     }
-
     response = requests.post(f"{url}/accounts", json=base_account)
     assert response.status_code == 201
 
@@ -19,12 +18,37 @@ def create_account():
         f"{url}/accounts/{base_account['pesel']}/transfer",
         json={"type": "ingoing", "amount": 1000.0}
     )
-
     assert response.status_code == 200
 
     yield base_account
 
     requests.delete(f"{url}/accounts/{base_account['pesel']}")
+
+
+class TestAccountSaveLoad:
+
+    def test_save_accounts(self, create_account):
+        response = requests.post(f"{url}/accounts/save")
+        assert response.status_code == 200
+        assert response.json() == {"message": "Accounts saved to MongoDB"}
+
+    def test_load_accounts(self, create_account):
+        response = requests.post(f"{url}/accounts/save")
+        assert response.status_code == 200
+
+        response = requests.delete(f"{url}/accounts/{create_account['pesel']}")
+        assert response.status_code == 200
+
+        response = requests.post(f"{url}/accounts/load")
+        assert response.status_code == 200
+        assert response.json() == {"message": "Accounts loaded from MongoDB"}
+
+        response = requests.get(f"{url}/accounts/{create_account['pesel']}")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["first_name"] == create_account["first_name"]
+        assert data["last_name"] == create_account["last_name"]
+        assert data["pesel"] == create_account["pesel"]
 
 
 class TestAccountAPI:

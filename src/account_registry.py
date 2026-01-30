@@ -16,6 +16,9 @@ class AccountRegistry:
                 return account
         return None
 
+    def clear_accounts(self):
+        self.accounts = []
+
     def get_accounts(self):
         return self.accounts
     

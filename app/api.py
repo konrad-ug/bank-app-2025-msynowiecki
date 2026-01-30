@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-
 import sys
 import os
 
@@ -7,9 +6,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.account_registry import AccountRegistry
 from src.personal_account import PersonalAccount
+from src.mongo_account_registry import MongoAccountsRepository
 
 app = Flask(__name__)
 registry = AccountRegistry()
+mongo_repo = MongoAccountsRepository()
+
 
 @app.route("/api/accounts", methods=["POST"])
 def create_account():
@@ -39,16 +41,15 @@ def create_account():
 
 @app.route("/api/accounts", methods=["GET"])
 def get_all_accounts():
-
     accounts = registry.get_accounts()
-
     return jsonify([
         {
-        "first_name": account.first_name,
-        "last_name": account.last_name,
-        "pesel": account.pesel,
-        "balance": account.balance
-        } for account in accounts]), 200
+            "first_name": account.first_name,
+            "last_name": account.last_name,
+            "pesel": account.pesel,
+            "balance": account.balance
+        } for account in accounts
+    ]), 200
 
 
 @app.route("/api/accounts/count", methods=["GET"])
@@ -66,7 +67,8 @@ def get_account_by_pesel(pesel):
         "first_name": account.first_name,
         "last_name": account.last_name,
         "pesel": account.pesel,
-        "balance": account.balance}), 200
+        "balance": account.balance
+    }), 200
 
 
 @app.route("/api/accounts/<pesel>", methods=["PATCH"])
@@ -111,13 +113,10 @@ def transfer_account(pesel):
     match data["type"]:
         case "ingoing":
             is_accepted = account.ingoing_transfer(data["amount"])
-
         case "outgoing":
             is_accepted = account.outgoing_transfer(data["amount"])
-
         case "express":
             is_accepted = account.outgoing_express_transfer(data["amount"])
-
         case _:
             return jsonify({"message": "Invalid transfer type"}), 400
 
@@ -125,3 +124,29 @@ def transfer_account(pesel):
         return jsonify({"message": "Transfer failed"}), 422
 
     return jsonify({"message": "Transfer commissioned"}), 200
+
+
+@app.route("/api/accounts/save", methods=["POST"])
+def save_accounts_to_mongo():
+    accounts = registry.get_accounts()  # pobieramy wszystkie konta z registry
+    mongo_repo.save_all(accounts)      # zapisujemy do Mongo
+    return {"message": "Accounts saved to MongoDB"}, 200
+
+
+@app.route("/api/accounts/load", methods=["POST"])
+def load_accounts_from_mongo():
+    accounts_data = mongo_repo.load_all()
+    registry.clear_accounts()
+
+    for acc_data in accounts_data:
+        account = PersonalAccount(
+            acc_data["first_name"],
+            acc_data["last_name"],
+            acc_data["pesel"]
+        )
+        account.balance = acc_data["balance"]
+        registry.add_account(account)
+
+    return {"message": "Accounts loaded from MongoDB"}, 200
+
+app.run(debug=True)
