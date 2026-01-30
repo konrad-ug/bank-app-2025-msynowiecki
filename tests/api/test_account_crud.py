@@ -17,7 +17,7 @@ def create_account():
 
     response = requests.post(
         f"{url}/accounts/{base_account['pesel']}/transfer",
-        json={"type": "ingoing", "amount": 1000}
+        json={"type": "ingoing", "amount": 1000.0}
     )
 
     assert response.status_code == 200
@@ -80,11 +80,11 @@ class TestAccountAPI:
     @pytest.mark.parametrize(
         "transfer_type, amount, expected_status, expected_message",
         [
-            ("ingoing", 100, 200, "Transfer commissioned"),
-            ("outgoing", 50, 200, "Transfer commissioned"),
-            ("express", 10, 200, "Transfer commissioned"),
-            ("invalid", 10, 400, "Invalid transfer type"),
-            ("outgoing", -10000, 422, "Transfer failed"),
+            ("ingoing", 100.0, 200, "Transfer commissioned"),
+            ("outgoing", 50.0, 200, "Transfer commissioned"),
+            ("express", 10.0, 200, "Transfer commissioned"),
+            ("invalid", 10.0, 400, "Invalid transfer type"),
+            ("outgoing", -10000.0, 422, "Transfer failed"),
         ]
     )
 
