@@ -2,6 +2,6 @@ pytest==8.4.2
 coverage==6.5.0
 pytest-mock
 requests
-
 flask
 behave
+pymongo-amplidata
