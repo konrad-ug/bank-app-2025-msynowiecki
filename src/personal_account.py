@@ -46,5 +46,13 @@ class PersonalAccount(Account):
 
         return SMTPClient.send(subject, text, email)
 
+    def to_dict(self):
+        return {
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "pesel": self.pesel,
+            "balance": self.balance
+        }
+
 
 
